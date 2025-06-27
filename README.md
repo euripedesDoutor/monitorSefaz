@@ -55,6 +55,11 @@ endereços diferentes (por exemplo, São Paulo usa `https://nfe.fazenda.sp.gov.b
 Todos esses domínios estão mapeados no objeto `SEFAZ_BASE_URLS` presente em
 `script.js`. Se alguma UF alterar seu endereço, basta atualizar esse objeto.
 
+Quando o serviço está ativo, o servidor normalmente exige a apresentação de um
+certificado digital na requisição. O monitor não envia certificados, portanto
+uma falha que contenha a palavra "certificate" ou "SSL" é interpretada como que
+o serviço está online.
+
 ## Estados em Contingência
 A lista de UFs em contingência é obtida dinamicamente da página oficial da SEFAZ/RS
 (<https://www.sefaz.rs.gov.br/NFE/NFE-SVC.aspx>). O sistema realiza uma requisição

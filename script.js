@@ -440,7 +440,8 @@ async function checkServiceStatus(uf, serviceName) {
         return { status: 'online', responseTime: Math.round(end - start) };
     } catch (e) {
         const end = performance.now();
-        return { status: 'offline', responseTime: Math.round(end - start) };
+        const requiresCert = e && e.message && /(certificate|cert|ssl)/i.test(e.message);
+        return { status: requiresCert ? 'online' : 'offline', responseTime: Math.round(end - start) };
     }
 }
 
