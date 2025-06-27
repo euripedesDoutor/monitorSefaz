@@ -272,11 +272,17 @@ function updateIndicators() {
             }
         });
 
+        const totalServicesUF = Object.keys(state.services).length;
+        const authService = state.services['Autorização NFe'];
+        const authOffline = authService && authService.status === 'offline';
+
         // Define o status geral do estado
         if (state.isContingency) {
             state.overallStatus = 'contingency';
-        } else if (stateOfflineServices > 0) {
+        } else if (authOffline || stateOfflineServices === totalServicesUF) {
             state.overallStatus = 'offline';
+        } else if (stateOfflineServices > 0) {
+            state.overallStatus = 'warning';
         } else {
             state.overallStatus = 'online';
         }
@@ -327,7 +333,8 @@ function updateMapColors() {
 function getStatusText(status) {
     switch(status) {
         case 'online': return 'Todos os serviços online';
-        case 'offline': return 'Algum serviço offline';
+        case 'offline': return 'Autorização offline ou todos os serviços offline';
+        case 'warning': return 'Algum outro serviço offline';
         case 'contingency': return 'Em contingência';
         default: return 'Status desconhecido';
     }

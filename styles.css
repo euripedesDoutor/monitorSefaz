@@ -196,6 +196,10 @@ body {
     background-color: #e74c3c;
 }
 
+.state-marker.warning {
+    background-color: #f1c40f;
+}
+
 .state-marker.contingency {
     background-color: #3498db;
 }
@@ -225,6 +229,10 @@ body {
 
 .legend-color.offline {
     background-color: #e74c3c;
+}
+
+.legend-color.warning {
+    background-color: #f1c40f;
 }
 
 .legend-color.contingency {
@@ -278,6 +286,11 @@ body {
 .state-card.offline {
     border-left-color: #e74c3c;
     background: #ffeaea;
+}
+
+.state-card.warning {
+    border-left-color: #f1c40f;
+    background: #fff9e6;
 }
 
 .state-card.contingency {

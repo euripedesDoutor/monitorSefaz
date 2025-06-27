@@ -14,7 +14,8 @@ O Monitor SEFAZ Brasil é um sistema de monitoramento em tempo real dos servidor
 ### 2. Mapa Visual do Brasil
 - Mapa real do Brasil com marcadores coloridos para cada estado
 - **Verde**: Todos os serviços do estado estão online
-- **Vermelho**: Algum serviço do estado está offline
+- **Vermelho**: Autorização offline ou todos os serviços offline
+- **Amarelo**: Algum outro serviço offline
 - **Azul**: Estado está em contingência (conforme lista da SEFAZ/RS)
 - Marcadores interativos com hover e clique
 
