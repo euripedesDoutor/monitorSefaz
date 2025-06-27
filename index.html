@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor SEFAZ Brasil - Status em Tempo Real</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-chart-line"></i> Monitor SEFAZ Brasil</h1>
+            <p>Monitoramento em Tempo Real dos Serviços SEFAZ</p>
+            <div class="last-update">
+                Última atualização: <span id="lastUpdate">--</span>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Painel de Indicadores Gerais -->
+            <div class="indicators-panel">
+                <div class="indicator online">
+                    <div class="indicator-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-number" id="onlineCount">0</div>
+                        <div class="indicator-label">Serviços Online</div>
+                    </div>
+                </div>
+                
+                <div class="indicator offline">
+                    <div class="indicator-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-number" id="offlineCount">0</div>
+                        <div class="indicator-label">Serviços Offline</div>
+                    </div>
+                </div>
+                
+                <div class="indicator contingency">
+                    <div class="indicator-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-number" id="contingencyCount">0</div>
+                        <div class="indicator-label">Em Contingência</div>
+                    </div>
+                </div>
+                
+                <div class="indicator total">
+                    <div class="indicator-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-number" id="totalCount">0</div>
+                        <div class="indicator-label">Total de Serviços</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mapa do Brasil -->
+            <div class="map-container">
+                <h2><i class="fas fa-map"></i> Mapa do Brasil - Status por Estado</h2>
+                <div class="brazil-map">
+                    <div class="map-overlay">
+                        <img src="brazil-map.png" alt="Mapa do Brasil" id="brazilMapImage">
+                        <div id="stateMarkers"></div>
+                    </div>
+                </div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-color online"></div>
+                        <span>Todos os serviços online</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color offline"></div>
+                        <span>Algum serviço offline</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color contingency"></div>
+                        <span>Em contingência</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Estados -->
+            <div class="states-list">
+                <h2><i class="fas fa-list"></i> Status por Estado</h2>
+                <div class="states-grid" id="statesGrid">
+                    <!-- Estados serão inseridos aqui via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Detalhes do Estado -->
+        <div id="stateModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Detalhes do Estado</h3>
+                    <span class="close" id="closeModal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="state-info">
+                        <div class="state-status" id="modalStateStatus"></div>
+                        <div class="services-list" id="modalServicesList">
+                            <!-- Serviços serão listados aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Carregando dados dos serviços SEFAZ...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

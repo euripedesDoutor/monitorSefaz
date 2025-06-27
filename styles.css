@@ -1,0 +1,481 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.header h1 i {
+    color: #3498db;
+    margin-right: 15px;
+}
+
+.header p {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+
+.last-update {
+    font-size: 0.9rem;
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* Dashboard */
+.dashboard {
+    display: grid;
+    gap: 30px;
+}
+
+/* Indicadores */
+.indicators-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.indicator {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.indicator:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.indicator-icon {
+    font-size: 3rem;
+    margin-right: 20px;
+}
+
+.indicator.online .indicator-icon {
+    color: #27ae60;
+}
+
+.indicator.offline .indicator-icon {
+    color: #e74c3c;
+}
+
+.indicator.contingency .indicator-icon {
+    color: #f39c12;
+}
+
+.indicator.total .indicator-icon {
+    color: #3498db;
+}
+
+.indicator-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.indicator.online .indicator-number {
+    color: #27ae60;
+}
+
+.indicator.offline .indicator-number {
+    color: #e74c3c;
+}
+
+.indicator.contingency .indicator-number {
+    color: #f39c12;
+}
+
+.indicator.total .indicator-number {
+    color: #3498db;
+}
+
+.indicator-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+/* Mapa */
+.map-container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.map-container h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.map-container h2 i {
+    color: #3498db;
+    margin-right: 10px;
+}
+
+.brazil-map {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.map-overlay {
+    position: relative;
+    display: inline-block;
+}
+
+.brazil-map img {
+    max-width: 100%;
+    height: auto;
+    max-height: 500px;
+}
+
+#stateMarkers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.state-marker {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.state-marker:hover {
+    transform: scale(1.3);
+    z-index: 10;
+}
+
+.state-marker.online {
+    background-color: #27ae60;
+}
+
+.state-marker.offline {
+    background-color: #e74c3c;
+}
+
+.state-marker.contingency {
+    background-color: #3498db;
+}
+
+.map-legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-color.online {
+    background-color: #27ae60;
+}
+
+.legend-color.offline {
+    background-color: #e74c3c;
+}
+
+.legend-color.contingency {
+    background-color: #3498db;
+}
+
+/* Lista de Estados */
+.states-list {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.states-list h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.states-list h2 i {
+    color: #3498db;
+    margin-right: 10px;
+}
+
+.states-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.state-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #bdc3c7;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.state-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.state-card.online {
+    border-left-color: #27ae60;
+    background: #d5f4e6;
+}
+
+.state-card.offline {
+    border-left-color: #e74c3c;
+    background: #ffeaea;
+}
+
+.state-card.contingency {
+    border-left-color: #3498db;
+    background: #e3f2fd;
+}
+
+.state-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.state-status {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.services-summary {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #95a5a6;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid #ecf0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    color: #2c3e50;
+    margin: 0;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #e74c3c;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #bdc3c7;
+}
+
+.service-item.online {
+    border-left-color: #27ae60;
+    background: #d5f4e6;
+}
+
+.service-item.offline {
+    border-left-color: #e74c3c;
+    background: #ffeaea;
+}
+
+.service-name {
+    font-weight: 500;
+}
+
+.service-status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.service-status.online {
+    background: #27ae60;
+    color: white;
+}
+
+.service-status.offline {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Loading */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading-spinner {
+    text-align: center;
+}
+
+.loading-spinner i {
+    font-size: 3rem;
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+.loading-spinner p {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .indicators-panel {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .indicator {
+        padding: 20px;
+    }
+    
+    .indicator-icon {
+        font-size: 2.5rem;
+        margin-right: 15px;
+    }
+    
+    .indicator-number {
+        font-size: 2rem;
+    }
+    
+    .map-legend {
+        gap: 15px;
+    }
+    
+    .states-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}
+
