@@ -83,23 +83,23 @@ function getServiceUrl(uf, serviceName) {
     const base = getBaseServiceUrl(uf);
     switch (serviceName) {
         case 'Autorização NFe':
-            return `${base}/NFeAutorizacao4`;
+            return `${base}/NFeAutorizacao4?wsdl`;
         case 'Retorno Autorização NFe':
-            return `${base}/NFeRetAutorizacao4`;
+            return `${base}/NFeRetAutorizacao4?wsdl`;
         case 'Inutilização NFe':
-            return `${base}/NFeInutilizacao4`;
+            return `${base}/NFeInutilizacao4?wsdl`;
         case 'Consulta Protocolo NFe':
-            return `${base}/NFeConsultaProtocolo4`;
+            return `${base}/NFeConsultaProtocolo4?wsdl`;
         case 'Status Serviço NFe':
-            return `${base}/NFeStatusServico4`;
+            return `${base}/NFeStatusServico4?wsdl`;
         case 'Consulta Cadastro':
-            return `${base}/CadConsultaCadastro4`;
+            return `${base}/CadConsultaCadastro4?wsdl`;
         case 'Recepção Evento NFe':
-            return `${base}/RecepcaoEvento4`;
+            return `${base}/RecepcaoEvento4?wsdl`;
         case 'NFCe Autorização':
-            return `${base}/NFCeAutorizacao4`;
+            return `${base}/NFCeAutorizacao4?wsdl`;
         case 'NFCe Consulta':
-            return `${base}/NFCeConsulta4`;
+            return `${base}/NFCeConsulta4?wsdl`;
         default:
             return null;
     }
@@ -435,13 +435,15 @@ async function checkServiceStatus(uf, serviceName) {
     const url = getServiceUrl(uf, serviceName);
     const start = performance.now();
     try {
-        await fetch(url, { method: 'GET', mode: 'no-cors' });
+        const response = await fetch(url, { method: 'GET', mode: 'no-cors' });
         const end = performance.now();
-        return { status: 'online', responseTime: Math.round(end - start) };
+        if (response && (response.ok || response.type === 'opaque')) {
+            return { status: 'online', responseTime: Math.round(end - start) };
+        }
+        return { status: 'offline', responseTime: Math.round(end - start) };
     } catch (e) {
         const end = performance.now();
-        const requiresCert = e && e.message && /(certificate|cert|ssl)/i.test(e.message);
-        return { status: requiresCert ? 'online' : 'offline', responseTime: Math.round(end - start) };
+        return { status: 'offline', responseTime: Math.round(end - start) };
     }
 }
 

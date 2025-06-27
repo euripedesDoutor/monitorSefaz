@@ -55,10 +55,10 @@ endereços diferentes (por exemplo, São Paulo usa `https://nfe.fazenda.sp.gov.b
 Todos esses domínios estão mapeados no objeto `SEFAZ_BASE_URLS` presente em
 `script.js`. Se alguma UF alterar seu endereço, basta atualizar esse objeto.
 
-Quando o serviço está ativo, o servidor normalmente exige a apresentação de um
-certificado digital na requisição. O monitor não envia certificados, portanto
-uma falha que contenha a palavra "certificate" ou "SSL" é interpretada como que
-o serviço está online.
+Os webservices da SEFAZ costumam solicitar certificado digital para chamadas de
+operações. Para evitar que o navegador apresente essa solicitação, o monitor
+verifica apenas o arquivo `?wsdl` de cada serviço, que é público e não exige
+certificado. Se o WSDL responder, o serviço é considerado online.
 
 ## Estados em Contingência
 A lista de UFs em contingência é obtida dinamicamente da página oficial da SEFAZ/RS
