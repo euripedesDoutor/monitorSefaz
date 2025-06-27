@@ -57,9 +57,9 @@ Todos esses domínios estão mapeados no objeto `SEFAZ_BASE_URLS` presente em
 ## Estados em Contingência
 A lista de UFs em contingência é obtida dinamicamente da página oficial da SEFAZ/RS
 (<https://www.sefaz.rs.gov.br/NFE/NFE-SVC.aspx>). O sistema realiza uma requisição
-e verifica cada linha da tabela: se a UF estiver marcada como `Desativada`, ela não
-está em contingência; caso contrário, a contingência é considerada ativa para
-aquela UF.
+e verifica cada linha da tabela. Caso a coluna de situação contenha `Desativado`
+ou `Desativada`, a UF não é considerada em contingência. Qualquer outro valor
+indica que a contingência está ativa para aquele estado.
 
 ## Tecnologias Utilizadas
 - **HTML5**: Estrutura da aplicação

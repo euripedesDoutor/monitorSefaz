@@ -122,11 +122,14 @@ async function updateContingencyStates() {
         const active = [];
         rows.forEach(row => {
             const cells = row.querySelectorAll('td');
-            if (cells.length > 1) {
+            if (cells.length >= 2) {
                 const uf = cells[0].textContent.trim();
-                const rowText = row.textContent;
-                if (uf.length === 2 && !rowText.includes('Desativada')) {
-                    active.push(uf);
+                const statusText = cells[1].textContent.trim();
+                if (uf.length === 2) {
+                    const isDeactivated = /Desativad[ao]/i.test(statusText);
+                    if (!isDeactivated) {
+                        active.push(uf);
+                    }
                 }
             }
         });
@@ -134,7 +137,8 @@ async function updateContingencyStates() {
         CONTINGENCY_STATES = active;
     } catch (error) {
         console.error('Erro ao atualizar estados em contingência:', error);
-        // Mantém a lista atual em caso de erro
+        // Em caso de erro, considera que não há estados em contingência
+        CONTINGENCY_STATES = [];
     }
 }
 
