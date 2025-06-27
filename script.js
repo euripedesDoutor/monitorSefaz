@@ -308,35 +308,10 @@ function setupEventListeners() {
 function startAutoUpdate() {
     // Atualiza a cada 30 segundos
     updateInterval = setInterval(() => {
-        simulateStatusChanges();
         updateDashboard();
     }, 30000);
 }
 
-function simulateStatusChanges() {
-    updateContingencyStates(); // Atualiza a lista de contingência antes de simular mudanças
-    // Simula mudanças aleatórias no status dos serviços
-    Object.keys(statesData).forEach(uf => {
-        const state = statesData[uf];
-        
-        Object.keys(state.services).forEach(serviceName => {
-            // 5% de chance de mudança de status
-            if (Math.random() < 0.05) {
-                const service = state.services[serviceName];
-                
-                if (state.isContingency) {
-                    service.status = 'contingency';
-                } else {
-                    // Alterna entre online e offline
-                    service.status = service.status === 'online' ? 'offline' : 'online';
-                }
-                
-                service.lastCheck = new Date();
-                service.responseTime = Math.floor(Math.random() * 1000) + 100;
-            }
-        });
-    });
-}
 
 function updateLastUpdateTime() {
     const now = new Date();
@@ -359,8 +334,7 @@ async function checkSefazServices() {
         // const response = await fetch('/api/sefaz-status');
         // const data = await response.json();
         
-        // Por enquanto, simula a resposta
-        simulateStatusChanges();
+        // Por enquanto, utiliza os dados simulados carregados inicialmente
         updateDashboard();
         
     } catch (error) {
