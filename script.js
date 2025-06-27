@@ -42,18 +42,102 @@ const SEFAZ_SERVICES = [
     'NFCe Consulta'
 ];
 
-// Estados em contingência (será atualizado dinamicamente ou via simulação)
+// URLs base dos webservices SEFAZ por UF (exceções ao padrão geral)
+const SEFAZ_BASE_URLS = {
+    AC: 'https://nfe.sefaz.ac.gov.br/ws',
+    AL: 'https://nfe.sefaz.al.gov.br/ws',
+    AP: 'https://nfe.sefaz.ap.gov.br/ws',
+    AM: 'https://nfe.sefaz.am.gov.br/ws',
+    BA: 'https://nfe.sefaz.ba.gov.br/ws',
+    CE: 'https://nfe.sefaz.ce.gov.br/ws',
+    DF: 'https://nfe.fazenda.df.gov.br/ws',
+    ES: 'https://nfe.sefaz.es.gov.br/ws',
+    GO: 'https://nfe.sefaz.go.gov.br/ws',
+    MA: 'https://sistemas.sefaz.ma.gov.br/ws/nfe',
+    MT: 'https://nfe.sefaz.mt.gov.br/ws',
+    MS: 'https://nfe.sefaz.ms.gov.br/ws',
+    MG: 'https://nfe.fazenda.mg.gov.br/ws',
+    PA: 'https://nfe.sefaz.pa.gov.br/ws',
+    PB: 'https://nfe.sefaz.pb.gov.br/ws',
+    PR: 'https://nfe.sefa.pr.gov.br/ws',
+    PE: 'https://nfe.sefaz.pe.gov.br/ws',
+    PI: 'https://nfe.sefaz.pi.gov.br/ws',
+    RJ: 'https://nfe.fazenda.rj.gov.br/ws',
+    RN: 'https://nfe.set.rn.gov.br/ws',
+    RS: 'https://nfe.sefaz.rs.gov.br/ws',
+    RO: 'https://nfe.sefin.ro.gov.br/ws',
+    RR: 'https://nfe.sefaz.rr.gov.br/ws',
+    SC: 'https://nfe.sef.sc.gov.br/ws',
+    SP: 'https://nfe.fazenda.sp.gov.br/ws',
+    SE: 'https://nfe.sefaz.se.gov.br/ws',
+    TO: 'https://nfe.sefaz.to.gov.br/ws'
+};
+
+// Geração de URL base para cada UF (padrão comum aos web services NFe)
+function getBaseServiceUrl(uf) {
+    return SEFAZ_BASE_URLS[uf] || `https://nfe.sefaz.${uf.toLowerCase()}.gov.br/ws`;
+}
+
+// Retorna o endpoint do serviço específico
+function getServiceUrl(uf, serviceName) {
+    const base = getBaseServiceUrl(uf);
+    switch (serviceName) {
+        case 'Autorização NFe':
+            return `${base}/NFeAutorizacao4?wsdl`;
+        case 'Retorno Autorização NFe':
+            return `${base}/NFeRetAutorizacao4?wsdl`;
+        case 'Inutilização NFe':
+            return `${base}/NFeInutilizacao4?wsdl`;
+        case 'Consulta Protocolo NFe':
+            return `${base}/NFeConsultaProtocolo4?wsdl`;
+        case 'Status Serviço NFe':
+            return `${base}/NFeStatusServico4?wsdl`;
+        case 'Consulta Cadastro':
+            return `${base}/CadConsultaCadastro4?wsdl`;
+        case 'Recepção Evento NFe':
+            return `${base}/RecepcaoEvento4?wsdl`;
+        case 'NFCe Autorização':
+            return `${base}/NFCeAutorizacao4?wsdl`;
+        case 'NFCe Consulta':
+            return `${base}/NFCeConsulta4?wsdl`;
+        default:
+            return null;
+    }
+}
+
+// Estados em contingência
 let CONTINGENCY_STATES = [];
 
-// Simula a atualização da lista de estados em contingência
-function updateContingencyStates() {
-    // Em um cenário real, esta função faria uma requisição para o backend
-    // que por sua vez faria o scraping do site da SEFAZ/RS.
-    // Por enquanto, vamos simular que a lista pode mudar.
-    const currentHour = new Date().getHours();
-    if (currentHour % 2 === 0) { // A cada 2 horas, simula uma mudança
-        CONTINGENCY_STATES = ["AM", "BA", "GO", "MA", "MS", "MT", "PE", "PR"];
-    } else {
+// Obtém a lista de estados em contingência diretamente do site oficial
+async function updateContingencyStates() {
+    try {
+        const target = 'https://www.sefaz.rs.gov.br/NFE/NFE-SVC.aspx';
+        const response = await fetch(target);
+        const html = await response.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const rows = doc.querySelectorAll('table tr');
+
+        const active = [];
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 2) {
+                const uf = cells[0].textContent.trim();
+                const statusText = cells[1].textContent.trim();
+                if (uf.length === 2) {
+                    const isDeactivated = /Desativad[ao]/i.test(statusText);
+                    if (!isDeactivated) {
+                        active.push(uf);
+                    }
+                }
+            }
+        });
+
+        CONTINGENCY_STATES = active;
+    } catch (error) {
+        console.error('Erro ao atualizar estados em contingência:', error);
+        // Em caso de erro, considera que não há estados em contingência
         CONTINGENCY_STATES = [];
     }
 }
@@ -70,18 +154,18 @@ document.addEventListener('DOMContentLoaded', function() {
     startAutoUpdate();
 });
 
-function initializeApp() {
+async function initializeApp() {
     showLoading(true);
-    updateContingencyStates(); // Atualiza a lista de contingência na inicialização
-    initializeStatesData();
+    await updateContingencyStates(); // Atualiza a lista de contingência na inicialização
+    await initializeStatesData();
     createBrazilMap();
     updateDashboard();
     showLoading(false);
 }
 
-function initializeStatesData() {
-    // Simula dados dos serviços SEFAZ para cada estado
-    Object.keys(BRAZILIAN_STATES).forEach(uf => {
+async function initializeStatesData() {
+    statesData = {};
+    await Promise.all(Object.keys(BRAZILIAN_STATES).map(async uf => {
         statesData[uf] = {
             name: BRAZILIAN_STATES[uf].name,
             region: BRAZILIAN_STATES[uf].region,
@@ -89,25 +173,15 @@ function initializeStatesData() {
             services: {}
         };
 
-        // Simula status dos serviços
-        SEFAZ_SERVICES.forEach(service => {
-            // Simula status aleatório com maior probabilidade de estar online
-            const random = Math.random();
-            let status = 'online';
-            
-            if (statesData[uf].isContingency) {
-                status = 'contingency';
-            } else if (random < 0.1) {
-                status = 'offline';
-            }
-
+        await Promise.all(SEFAZ_SERVICES.map(async service => {
+            const { status, responseTime } = await checkServiceStatus(uf, service);
             statesData[uf].services[service] = {
-                status: status,
-                responseTime: Math.floor(Math.random() * 1000) + 100,
+                status: statesData[uf].isContingency ? 'contingency' : status,
+                responseTime: responseTime,
                 lastCheck: new Date()
             };
-        });
-    });
+        }));
+    }));
 }
 
 function createBrazilMap() {
@@ -198,11 +272,17 @@ function updateIndicators() {
             }
         });
 
+        const totalServicesUF = Object.keys(state.services).length;
+        const authService = state.services['Autorização NFe'];
+        const authOffline = authService && authService.status === 'offline';
+
         // Define o status geral do estado
         if (state.isContingency) {
             state.overallStatus = 'contingency';
-        } else if (stateOfflineServices > 0) {
+        } else if (authOffline || stateOfflineServices === totalServicesUF) {
             state.overallStatus = 'offline';
+        } else if (stateOfflineServices > 0) {
+            state.overallStatus = 'warning';
         } else {
             state.overallStatus = 'online';
         }
@@ -253,7 +333,8 @@ function updateMapColors() {
 function getStatusText(status) {
     switch(status) {
         case 'online': return 'Todos os serviços online';
-        case 'offline': return 'Algum serviço offline';
+        case 'offline': return 'Autorização offline ou todos os serviços offline';
+        case 'warning': return 'Algum outro serviço offline';
         case 'contingency': return 'Em contingência';
         default: return 'Status desconhecido';
     }
@@ -307,14 +388,14 @@ function setupEventListeners() {
 
 function startAutoUpdate() {
     // Atualiza a cada 30 segundos
-    updateInterval = setInterval(() => {
-        simulateStatusChanges();
+    updateInterval = setInterval(async () => {
+        await checkSefazServices();
         updateDashboard();
     }, 30000);
 }
 
-function simulateStatusChanges() {
-    updateContingencyStates(); // Atualiza a lista de contingência antes de simular mudanças
+async function simulateStatusChanges() {
+    await updateContingencyStates(); // Atualiza a lista de contingência antes de simular mudanças
     // Simula mudanças aleatórias no status dos serviços
     Object.keys(statesData).forEach(uf => {
         const state = statesData[uf];
@@ -349,20 +430,38 @@ function showLoading(show) {
     overlay.style.display = show ? 'flex' : 'none';
 }
 
+// Consulta a URL de status e retorna se o serviço está online
+async function checkServiceStatus(uf, serviceName) {
+    const url = getServiceUrl(uf, serviceName);
+    const start = performance.now();
+    try {
+        const response = await fetch(url, { method: 'GET', mode: 'no-cors' });
+        const end = performance.now();
+        if (response && (response.ok || response.type === 'opaque')) {
+            return { status: 'online', responseTime: Math.round(end - start) };
+        }
+        return { status: 'offline', responseTime: Math.round(end - start) };
+    } catch (e) {
+        const end = performance.now();
+        return { status: 'offline', responseTime: Math.round(end - start) };
+    }
+}
+
 // Função para simular consulta real aos serviços SEFAZ (para implementação futura)
 async function checkSefazServices() {
-    // Esta função pode ser expandida para fazer consultas reais aos webservices
-    // Por enquanto, usa dados simulados
-    
     try {
-        // Aqui seria feita a consulta real aos serviços
-        // const response = await fetch('/api/sefaz-status');
-        // const data = await response.json();
-        
-        // Por enquanto, simula a resposta
-        simulateStatusChanges();
-        updateDashboard();
-        
+        await updateContingencyStates();
+        await Promise.all(Object.keys(statesData).map(async uf => {
+            const state = statesData[uf];
+            state.isContingency = CONTINGENCY_STATES.includes(uf);
+
+            await Promise.all(Object.keys(state.services).map(async serviceName => {
+                const { status, responseTime } = await checkServiceStatus(uf, serviceName);
+                state.services[serviceName].status = state.isContingency ? 'contingency' : status;
+                state.services[serviceName].responseTime = responseTime;
+                state.services[serviceName].lastCheck = new Date();
+            }));
+        }));
     } catch (error) {
         console.error('Erro ao consultar serviços SEFAZ:', error);
     }
